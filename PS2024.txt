@@ -1,0 +1,444 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+@botot
+Install-WindowsFeature  -name dns  -includeManagementTools
+Install-WindowsFeature  -name Web-Server  -includeManagementTools
+
+
+Add-DnsServerPrimaryZone -Name "remoteM.com" -ZoneFile "remoteM.com.dns"
+
+add-DnsServerResourceRecord -zonename remoteM.com -A -name srv-M 
+                                                -ipv4address 192.168.m.1
+ping srv-M.remoteM.com
+
+add-DnsServerResourceRecond -zonename remoteM.com -Cname -name www
+                                    -hostname srv-M.remoteM.com
+ping www.remoteM.com
+
+New-Website -name "TESTme" -hostheader "www.remoteM.com"
+                           -physicalpath "c:\MCSA2K16\WEBSITECLASS\dating"
+						   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+#$myip1  =  "10.12.1.6"
+#$cred1  =  Get-Credential
+#$con1 = New-PSsession -ComputerName $myip1 -credential $cred1
+####
+#Install-WindowsFeature Net-Framework-Core -source d:\sources\sxs
+#Install-WindowsFeature  -name DNS  -includeManagementTools
+#Install-WindowsFeature  -name Web-Server  -includeManagementTools
+#gawa domain
+Add-DnsServerPrimaryZone -Name "dom88.com" -ZoneFile "dom88.com.dns"
+
+#@creating A record, Cname records:
+
+add-DnsServerResourceRecord -zonename dom88.com -A -name s1 -ipv4address 10.12.1.6
+add-DnsServerResourceRecord -zonename dom88.com -A -name "." -ipv4address 10.12.1.6
+#
+add-DnsServerResourceRecord -zonename dom88.com -Cname -name www -hostname s1.dom88.com
+add-DnsServerResourceRecord -zonename dom88.com -Cname -name pop -hostname s1.dom88.com
+add-DnsServerResourceRecord -zonename dom88.com -Cname -name imap -hostname s1.dom88.com
+add-DnsServerResourceRecord -zonename dom88.com -Cname -name smtp -hostname s1.dom88.com
+#
+Add-DnsServerResourceRecordMX -Preference 10  -Name "." -MailExchange "s1.dom88.com" -ZoneName "dom88.com"
+
+
+
+
+
+1. disable all firewall
+cmd
+powershell
+Set-NetFirewallProfile  -Profile Domain,Public,Private  -Enabled False
+
+step2: install DNS server:
+
+Install-WindowsFeature  DNS  -includeManagementTools
+
+task1: Get IP address:
+
+Get-NetIPAddress
+
+Get-NetIPAddress | ? AddressFamily -eq IPv4 | FT -AutoSize
+
+ifIndex IPAddress       PrefixLength PrefixOrigin SuffixOrigin AddressState PolicyStore
+------- ---------       ------------ ------------ ------------ ------------ -----------
+11      192.168.109.2             24 Manual       Manual       Preferred    ActiveStore
+28      192.168.56.1              24 Manual       Manual       Preferred    ActiveStore
+13      169.254.43.203            16 WellKnown    Link         Preferred    ActiveStore
+22      192.168.1.18              24 Manual       Manual       Preferred    ActiveStore
+
+Get-NetAdapter Wi-Fi | Get-NetIPAddress | FT -AutoSize
+
+ifIndex IPAddress                    PrefixLength PrefixOrigin SuffixOrigin AddressState PolicyStore
+------- ---------                    ------------ ------------ ------------ ------------ -----------
+31      fe80::6426:2a11:f72b:c2e8%31           64 WellKnown    Link         Deprecated   ActiveStore
+31      169.254.194.232                        16 WellKnown    Link         Tentative    ActiveStore
+
+Get-NetAdapter
+New-NetIPAddress 125.0.0.122 -InterfaceIndex 20 -DefaultGateway 192.168.1.1 -AddressFamily IPv4 -PrefixLength 24
+Set-DnsClientServerAddress -InterfaceIndex __
+                           -ServerAddresses 192.168.m.1
+
+task2: Connectivity:
+
+Test-NetConnection www.nba.com
+
+ComputerName           : www.nba.com
+RemoteAddress          : 23.65.185.163
+InterfaceAlias         : vEthernet (Get internet)
+SourceAddress          : 172.88.0.18
+PingSucceeded          : True
+PingReplyDetails (RTT) : 177 ms
+
+Test-NetConnection -ComputerName www.nba.com -InformationLevel Detailed
+
+ComputerName           : www.nba.com
+RemoteAddress          : 23.65.185.163
+NameResolutionResults  : 23.65.185.163
+InterfaceAlias         : vEthernet (Get internet)
+SourceAddress          : 172.88.0.18
+NetRoute (NextHop)     : 192.168.1.1
+PingSucceeded          : True
+PingReplyDetails (RTT) : 176 ms
+
+
+Resolve-DnsName www.nba.com
+
+Name                           Type   TTL   Section    NameHost                                            
+----                           ----   ---   -------    --------                                            
+www.nba.com                    CNAME  0     Answer     nbaevsecure.edgekey.net                             
+nbaevsecure.edgekey.net        CNAME  0     Answer     e737.dscg.akamaiedge.net                            
+
+Name       : e737.dscg.akamaiedge.net
+QueryType  : AAAA
+TTL        : 0
+Section    : Answer
+IP6Address : 2600:1406:3f:38a::2e1
+
+
+Name       : e737.dscg.akamaiedge.net
+QueryType  : AAAA
+TTL        : 0
+Section    : Answer
+IP6Address : 2600:1406:3f:384::2e1
+
+
+Name       : e737.dscg.akamaiedge.net
+QueryType  : A
+TTL        : 0
+Section    : Answer
+IP4Address : 23.65.185.163
+
+
+Resolve-DnsName nba.com -type SOA
+
+Resolve-DnsName nba.com -Server 8.8.8.8 -Type A
+
+Task3: Route PRINT:
+
+Get-NetRoute -Protocol local -DestinationPrefix 192.168*
+
+ifIndex DestinationPrefix                              NextHop                                  RouteMetric
+------- -----------------                              -------                                  -----------
+11      192.168.109.255/32                             0.0.0.0                                          256
+11      192.168.109.2/32                               0.0.0.0                                          256
+11      192.168.109.0/24                               0.0.0.0                                          256
+34      192.168.80.255/32                              0.0.0.0                                          256
+
+
+TASk4: TRACERT
+
+Test-NetConnection www.nba.com -TraceRoute
+
+
+ComputerName           : www.nba.com
+RemoteAddress          : 23.65.185.163
+InterfaceAlias         : vEthernet (Get internet)
+SourceAddress          : 172.88.0.18
+PingSucceeded          : True
+PingReplyDetails (RTT) : 177 ms
+TraceRoute             : 192.168.1.1
+
+Task4.1: the new Netstat
+
+Get-NetTCPConnection | ? State -eq Established | FT -AutoSize
+
+LocalAddress LocalPort RemoteAddress   RemotePort State       AppliedSetting OwningProcess
+------------ --------- -------------   ---------- -----       -------------- -------------
+127.0.0.1    41199     127.0.0.1       41197      Established Datacenter     3312         
+127.0.0.1    41198     127.0.0.1       1541       Established Datacenter     10184        
+127.0.0.1    41197     127.0.0.1       41199      Established Datacenter     10184        
+192.168.1.18 38440     52.165.175.144  443        Established Internet       6240         
+192.168.1.18 31700     217.163.28.161  51065      Established Internet       7500         
+127.0.0.1    27015     127.0.0.1       1571       Established Datacenter     2896         
+192.168.1.18 23032     107.21.151.140  50010      Established Internet       7500         
+192.168.1.18 23015     27.5.135.146    63226      Established Internet       7500         
+192.168.1.18 22974     52.114.7.37     443        Established Internet       7336         
+192.168.1.18 22973     52.114.7.37     443        Established Internet       7336         
+192.168.1.18 22969     13.107.42.12    443        Established Datacenter     7336         
+192.168.1.18 22704     77.139.53.5     64176      Established Internet       7500         
+192.168.1.18 22601     185.149.90.23   51082      Established Internet       7500         
+192.168.1.18 22600     46.166.184.38   62444      Established Internet       7500      
+
+#######################################################################
+
+TASKX
+
+Step1: Install Hyper-V on a Server:
+
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+
+Step2: Create a Network on host computer:
+
+New-VMSwitch -Name LabNet -SwitchType Private
+Get-VMSwitch
+
+step3: Create VMS:
+
+New-VM -name 2k16 -MemoryStartupBytes 4gb -BootDevice VHD -NewVHDPath .\VMs\2k16.vhdx -Path .\VMData -NewVHDSizeBytes 60gb -Generation 2 -SwitchName LabNet
+
+step4: Create DVD drives:
+
+Add-VMDvdDrive -VMName 2k16 -Path G:\ALLnewISO\en_windows_server_2016_x64_dvd_9327751.iso
+
+Step5: Install on the HyperV: as no desktop:
+
+New-NetIPAddress 10.0.0.1 -InterfaceAlias "Ethernet" -Prefixlen
+
+Step6: MAKE a DC:
+
+a.	New-NetIPAddress 10.0.0.1 -InterfaceAlias "Ethernet" -PrefixLength 24 
+b.	Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses 127.0.0.1 
+c. Rename-Computer DC 
+d.	Restart-Computer 
+e.	Install-WindowsFeature AD-Domain-Services, DHCP -IncludeManagementTools  
+f.	Install-ADDSForest -DomainName corp.packtlab.com 
+g.	Add-DhcpServerv4Scope -name "PacktLabNet" -StartRange 10.0.0.50 -EndRange 10.0.0.100 -
+SubnetMask 255.255.255.0 
+h.	Set-DhcpServerv4OptionValue -DnsDomain corp.packtlab.com -DnsServer 10.0.0.1 
+i.	Add-DhcpServerInDC -DnsName dc.corp.packtlab.com 
+j.	New-ADUser -SamAccountName SysAdmin -AccountPassword (read-host "Set user password" assecurestring) -name "SysAdmin" -enabled $true -PasswordNeverExpires $true -
+ChangePasswordAtLogon $false 
+k.	Add-ADPrincipalGroupMembership -
+Identity "CN=SysAdmin,CN=Users,DC=corp,DC=packtlab,DC=com" -
+MemberOf "CN=Enterprise Admins,CN=Users,DC=corp,DC=packtlab,DC=com","CN=Domain Ad mins,CN=Users,DC=corp,DC=packtlab,DC=com" 
+l.	Get-ADPrincipalGroupMembership sysadmin 
+
+STep7: 7.	Configure Server 2016 as APP 
+
+a.	New-NetIPAddress 10.0.0.3 -InterfaceAlias "Ethernet" -PrefixLength 24 
+b.	Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses 10.0.0.1 
+c.	Add-Computer -NewName APP -DomainName corp.packtlab.com 
+d.	Restart-Computer 
+e.	Install-WindowsFeature Web-WebServer -IncludeManagementTools 
+f.	New-Item -path c:\networkfiles -type directory 
+g.	Write-Output "This is a test network file." | out-file c:\networkfiles\test.txt 
+h.	New-SmbShare -name files -path c:\networkfiles -changeaccess CORP\SysAdmin 
+
+step8: Configure CLIENT and Test (Run these commands on virtual machine CLIENT in PowerShell console) 
+
+a.	Add-Computer -NewName CLIENT  -DomainName corp.packtlab.com 
+b.	Restart-Computer 
+c.	Log into CLIENT as SysAdmin 
+d.	Open Edge web browser and go to http://app 
+e.	You should get a IIS landing page. 
+f.	Open file explorer and go to \\app\ 
+g.	You should see a folder named Files, open it and then the file test.txt 
+
+###############################
+final Task:
+on a win10:
+https://www.hemalekanayake.com/2016/07/solved-winrm-client-cannot-process.html
+net start WinRM
+Set-Item WSMan:\localhost\Client\TrustedHosts -Value *
+Enter-Pssession -computername "200.0.0.2" -credential administrator
+
+
+Allow your to server to be remotely managed:
+
+powershell
+Configure-SMremoting  -enable
+Enable-PSremoting  -force
+
+How will remote manage your server, allow all to remote manager you:
+
+set-item  wsman:\localhost\Client\TrustedHosts  -value *   
+Y
+Set-Service WinRM -StartMode Automatic
+
+On Another Server/windows that will remotely Connect to m.2
+
+     $myip5  =  "192.168.m.5"
+     $cred5  =  Get-Credential
+     $con5 = New-PSsession -ComputerName $myip5 -credential $cred5
+     Get-Pssession    "look/remember the id "
+     Enter-Pssession  -id  1
+
+***********on virtual ps **********************
+
+On Another Server/windows that will remotely Connect to m.2
+
+     $myIP3  =  "192.168.m.1"
+     $CRED3  =  Get-Credential
+     $con3 = New-PSsession -ComputerName $myIP3 -credential $CRED3
+
+     Get-Pssession
+     index:   id = 1
+
+     Enter-Pssession  -id  1
+
+Tunay na server: WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+
+Set-Service WinRM -StartMode Automatic
+
+On virtual connecting remotely via ps
+192.168.m.1>
+
+@botot
+
+Install-WindowsFeature  -name Web-Server  -includeManagementTools
+
+
+Add-DnsServerPrimaryZone -Name "remoteM.com" -ZoneFile "remoteM.com.dns"
+
+add-DnsServerResourceRecord -zonename remoteM.com -A -name srv-M 
+                                                -ipv4address 192.168.m.1
+ping srv-M.remoteM.com
+
+add-DnsServerResourceRecond -zonename remoteM.com -Cname -name www
+                                    -hostname srv-M.remoteM.com
+ping www.remoteM.com
+
+New-Website -name "TESTme" -hostheader "www.remoteM.com"
+                           -physicalpath "c:\MCSA2K16\WEBSITECLASS\dating"
+						   
+
+Task2k19-A: create one user in ad:
+
+Import-Module ActiveDirectory
+
+Get-Command New-ADUser –Syntax
+
+New-ADUser B.Johnson
+New-ADUser M.jordan
+
+Get-ADUser -Filter * -Properties samAccountName | select samAccountName
+
+To Create a usable account:
+
+
+    Name – Jack Robinson
+    Given Name – Jack
+    Surname – Robinson
+    Account Name – J.Robinson
+    User Principal Name – J.Robinson@enterprise.com
+    Path address – “OU=Managers,DC=enterprise,DC=com”
+    Password Input
+    Status – Enabled
+
+New-ADUser -Name "Jack Robinson" -GivenName "Jack" -Surname "Robinson" -SamAccountName "J.Robinson" -UserPrincipalName "J.Robinson@doma.com" -Path "DC=enterprise,DC=com"  -Enabled $true
+
+Now let’s take a look at the results by running the following cmdlet:
+
+Get-ADUser J.Robinson -Properties CanonicalName, Enabled, GivenName, Surname, Name, UserPrincipalName, samAccountName, whenCreated, PasswordLastSet  | Select CanonicalName, Enabled, GivenName, Surname, Name, UserPrincipalName, samAccountName, whenCreated, PasswordLastSet
+
+ 
+CREATE AN OU IN ADS:
+
+New-ADOrganizationalUnit -Name "Petri Users"
+
+Get-ADOrganizationalUnit -Identity "OU=Petri Users,DC=globomantics,DC=Local"
+
+Populate Active Directory with Test User Accounts 
+
+$OU = "OU=Enabled Users,OU=User Accounts,DC=ad,DC=contoso,DC=com"
+
+####################adds powershell ##################################
+
+set-executionpolicy unrestricted = do not use, allow any script!
+set-executionpolicy RemoteSigned | AllSigned | bypass
+
+Get-aduser administrator
+
+Get-aduser administrator -Properties *
+
+Get-aduser administrator -Properties emailaddress
+
+Get-aduser -filter *
+
+
+# Install FTP Server feature
+Install-WindowsFeature Web-Ftp-Server -IncludeManagementTools
+
+# Create root folder
+New-Item -ItemType Directory -Path C:\ -Name dumps
+
+# Configure FTP site
+$ftpSiteName = "FTP Site"
+$ftpRootPath = "C:\dumps"
+$ftpAuthentication = "Anonymous"
+
+New-WebFtpSite -Name $ftpSiteName -PhysicalPath $ftpRootPath -AllowAnonymous -Force
+
+# Configure FTP authorization rules
+Set-WebConfiguration -Filter /system.ftpServer/security/authorization -Value @{accessType="Allow"; users="*"; permissions="Read,Write"}
+
+# Restart FTP Service
+Restart-Service wmsvc
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+#$myip1  =  "10.12.1.6"
+#$cred1  =  Get-Credential
+#$con1 = New-PSsession -ComputerName $myip1 -credential $cred1
+####
+#Install-WindowsFeature Net-Framework-Core -source d:\sources\sxs
+#Install-WindowsFeature  -name DNS  -includeManagementTools
+#Install-WindowsFeature  -name Web-Server  -includeManagementTools
+#gawa domain
+Add-DnsServerPrimaryZone -Name "dom88.com" -ZoneFile "dom88.com.dns"
+
+#@creating A record, Cname records:
+
+add-DnsServerResourceRecord -zonename dom88.com -A -name s1 -ipv4address 10.12.1.6
+add-DnsServerResourceRecord -zonename dom88.com -A -name "." -ipv4address 10.12.1.6
+#
+add-DnsServerResourceRecord -zonename dom88.com -Cname -name www -hostname s1.dom88.com
+add-DnsServerResourceRecord -zonename dom88.com -Cname -name pop -hostname s1.dom88.com
+add-DnsServerResourceRecord -zonename dom88.com -Cname -name imap -hostname s1.dom88.com
+add-DnsServerResourceRecord -zonename dom88.com -Cname -name smtp -hostname s1.dom88.com
+#
+Add-DnsServerResourceRecordMX -Preference 10  -Name "." -MailExchange "s1.dom88.com" -ZoneName "dom88.com"
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

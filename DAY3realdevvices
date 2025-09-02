@@ -1,0 +1,151 @@
+TROUBLESHOOTING AND DIAGNOSTIC FOR NETWORK ENGINEERS:
+EXPERIENCE >>> CERTIFIED, lethal = XP + Certified + Englishero = 3threesome.
+ping test: via windows Cmd:    if Fails
+ping 10.m.1.10               cable unplugged, wrong IP, Duplicate: 169.254.x.x
+ping 10.m.1.4                no Vlan, wrong Vlan, sw: sh vlan brief
+ping 10.m.100.4              type "IP routing" on SW, 
+ping 10.m.m.4                check FIberUplinkSwitch= sh run int gi 0/1
+                             "no switchport"
+ping  10.m.m.1               Edge: sh ip int brief
+                             NO routing Configured: CCNA = Job
+ping  200.0.0.m              NO routing Configured: CCNA = Job
+ping 200.0.0.k               KLASSMATE  DID NOT CONFIGURE ROUTING
+ping 10.k.k.1                Klassmate did not configure switch routing
+ping 10.k.k.4                Klassmate did not configure switch routing
+ping 10.k.100.8              Klassmate did not configure routing on CUCM
+ping 10.k.1.10               Klassmate did not configure routing on Windows Server
+
+
+TASK1: STATIC ROUTING: Very Cheap, China is King. Home/End Devices.
+VS DYNAMIC ROUTING.
+Static Routing @CUCM:
+config t
+ip route 0.0.0.0  0.0.0.0  10.m.100.4  1
+
+Static Routing @COREbaba:
+config t
+ip route 0.0.0.0  0.0.0.0  10.m.m.1  1
+
+@EDGE STATIC ROUTING REVIEW
+config t
+ip route 10.m.0.0 255.255.0.0 10.m.m.4 1
+ip route 10.11.0.0 255.255.0.0 200.0.0.11 1
+!ip route 10.12.0.0 255.255.0.0 200.0.0.12 1
+ip route 10.21.0.0 255.255.0.0 200.0.0.21 1
+ip route 10.22.0.0 255.255.0.0 200.0.0.22 1
+ip route 10.31.0.0. 255.255.0.0 200.0.0.31 1
+ip route 10.32.0.0 255.255.0.0 200.0.0.32 1
+ip route 10.41.0.0 255.255.0.0 200.0.0.41 1
+
+CONFIGURING OSPF AND EIGRP IN REAL WORLD DEVICES, NOT VIRTUAL
+
+task4: CONFIGURING eigrp FOR ALL switches,cms
+       and OSPF for edge cisco,fortinet,palos:
+@cm:
+config t
+router eigrp M
+ no auto-summary
+ network 10.m.100.0 0.0.0.255
+@CoreBAba:
+config t
+no router eigrp 100
+router eigrp 100
+ no auto-summary
+ network 10.m.100.0 0.0.0.255
+ network 10.m.50.0 0.0.0.255
+ network 10.m.10.0 0.0.0.255
+ network 10.m.1.0 0.0.0.255
+ network 10.m.m.0 0.0.0.255
+@eDGE:
+config t
+router eigrp 100
+ no auto-summary
+ network 10.m.m.0 0.0.0.255
+ network 200.0.0.0 0.0.0.255
+
+how to eigrp if eigrp is working CORRECTLY?
+show ip eigrp neighbor
+EIGRP-IPv4 Neighbors for AS(12)
+H   Address                 Interface              Hold Uptime   SRTT   RTO  Q  Seq
+                                                   (sec)         (ms)       Cnt Num
+1   10.12.12.1              Gi0/1                    11 00:19:53    1   100  0  3
+0   10.12.100.8             Vl100   
+
+show ip eigrp topology
+P 10.12.50.0/24, 1 successors, FD is 2816
+        via Connected, Vlan50
+P 10.12.12.0/24, 1 successors, FD is 2816
+        via Connected, GigabitEthernet0/1
+P 10.12.1.0/24, 1 successors, FD is 2816
+        via Connected, Vlan1
+P 10.12.10.0/24, 1 successors, FD is 2816
+        via Connected, Vlan10
+P 10.12.100.0/24, 1 successors, FD is 2816
+show ip route eigrp
+
+
+@eDGE: both eigrp(internal) and ospf(external):
+router ospf 1
+router-id m.0.0.1
+network 200.0.0.0 0.0.0.255 area 0
+network m.0.0.1 0.0.0.0 area 0
+end
+
+EDGE12#sh ip route ospf
+
+      11.0.0.0/32 is subnetted, 1 subnets
+O        11.0.0.1 [110/2] via 200.0.0.11, 00:15:32, GigabitEthernet0/0/1
+      21.0.0.0/32 is subnetted, 1 subnets
+O        21.0.0.1 [110/2] via 200.0.0.21, 00:15:32, GigabitEthernet0/0/1
+      22.0.0.0/32 is subnetted, 1 subnets
+O        22.0.0.1 [110/2] via 200.0.0.22, 00:15:32, GigabitEthernet0/0/1
+      31.0.0.0/32 is subnetted, 1 subnets
+O        31.0.0.1 [110/2] via 200.0.0.31, 00:15:32, GigabitEthernet0/0/1
+      32.0.0.0/32 is subnetted, 1 subnets
+O        32.0.0.1 [110/2] via 200.0.0.32, 00:15:32, GigabitEthernet0/0/1
+      41.0.0.0/32 is subnetted, 1 subnets
+O        41.0.0.1 [110/2] via 200.0.0.41, 00:15:32, GigabitEthernet0/0/1
+      42.0.0.0/32 is subnetted, 1 subnets
+O        42.0.0.1 [110/2] via 200.0.0.42, 00:15:32, GigabitEthernet0/0/1
+      52.0.0.0/32 is subnetted, 1 subnets
+O        52.0.0.1 [110/2] via 200.0.0.52, 00:15:32, GigabitEthernet0/0/1
+      61.0.0.0/32 is subnetted, 1 subnets
+O        61.0.0.1 [110/2] via 200.0.0.61, 00:15:32, GigabitEthernet0/0/1
+      62.0.0.0/32 is subnetted, 1 subnets
+O        62.0.0.1 [110/2] via 200.0.0.62, 00:10:30, GigabitEthernet0/0/1
+
+TASK6: HOW TO DO ROUTE REDISTRIBUTION IN EDGE ROUTERS so that you can
+ask your boss 70k to 100k salary increase!
+step1: GET THE SEED METRIC:
+OSPF(is very kind/open LIKE pinoys) AND EIGRP(is very racists! like Koreans) DONT LIKE TO MIX OTHER!
+
+EDGE12#sh int gi 0/0/0
+GigabitEthernet0/0/0 is up, line protocol is up 
+  Hardware is ISR4321-2x1GE, address is 689e.0b49.f1a0 (bia 689e.0b49.f1a0)
+  Description: INSIDE
+  Internet address is 10.12.12.1/24
+  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+
+k1 bandwidth = 1000000
+k2 delay = 1
+k3 rely = 255
+k4 load = 1
+k5 MTU = 1500
+
+#EDGE:
+config t
+router ospf 1
+ redistribute eigrp M subnets
+router eigrp M
+ redistribute ospf 1 Metric 1000000 1 255 1 1500
+end
+
+TASK7: FUNDAMENTALS OF CYBER SECURITY. ATTACK/DEFENSE.
+
+
+
+
+
+
+

@@ -1,0 +1,360 @@
+Day2. Task1.
+1. Repetition is the mother
+of all skills:
+- switch: 
+- cucm:
+- edge:
+
+Task2: What 3 Letters that will make
+       your HR file/resume = promoted/
+       pirated
+              IPv4  IPv6
+promotion/jobInterview
+questions for N.E,S.E,CyberSc:
+Q1: what are public IP address and private
+ip address.
+Public IP address are Internet PingableIP/
+routable IP address.
+208.67.222.222
+208.67.220.220
+8.8.8.8
+1.1.1.1
+4.2.2.2
+
+What are Traceable IP Address:
+tracert www.x-art.com
+
+Q2: Private IP address are IP give to connect
+    to local network.
+   big/large:  10.0.0.0/8 -> 16,777,214 ip address.
+  
+   medium:    172.16.0.0/16 -> 64,534 ip address
+
+   home:   192.168.0-254.0/24 -> 254 ip address
+
+Q3: what are the Five ClassFulles of IP address:
+          "route print"
+specialAddress; 0.0.0.0:defRoute   
+            &  127.0.0.1: loopback
+A = 1-126
+B = 128-191
+C = 192-223
+D = 224-239
+E = 240-255
+
+TASK3: how a network/systems/Prog engineer looks 
+       at numbers:
+  DEC:		bin:		hex:
+  0-255         0 1            0-9,a-f
+
+TASK4: Bit Length:
+
+195 = b
+13 =  b
+1750 = 1b
+1855 =  b
+2,700 =  b
+2 =  b
+376 =  b
+888 = b
+8 = b
+212 = b 
+4,500 = b
+81 = b
+20,000  = b  
+55 = b
+
+TASK5: Subnetting:
+Large: 10.0.0..0/8 -> 16M
+Med:   172.16.0.0/16 -> 65k
+Pobre: 192.168.1.0/24 -> 254
+
+Ex.5.1: Design and Configure accenture.com
+call center with 1750 Agents,Tls,QAs,Pm. using
+10.0.0.0/8:HowToSubnet: WorldMethod: vs 
+RivanFigerningMethod: RFM: 
+
+ConvertIT: 1750 Agents = 11b
+SubractIT: /32 - /11b = /21-> 3rd,8i
+iPasokitSaHiwa: "iPasok 8i sa 3rd Octet"x2
+
+AccentureSubnet: 10.0.8.0/21
+1st valid:        10.0.8.1
+lastIP/broadcast: 10.0.15.255
+NotAccenture: 10.0.16.0 /21
+
+Ex.5.2: Design and Configure accenture.com
+call center with 2750 Agents,Tls,QAs,Pm. using
+10.0.0.0/8:HowToSubnet: WorldMethod: vs 
+RivanFigerningMethod: RFM: 
+
+ConvertIT: 2750 Agents = 12b
+SubractIT: /32 - /12b = /20-> 3rd,16i
+iPasokitSaHiwa: "iPasok 8i sa 3rd Octet"x2
+
+AccentureSubnet: 10.0.16.0/21
+1st valid:        10.0.16.1
+lastIP/broadcast: 10.0.31.255
+NotAccenture: 10.0.32.0 /21
+
+TemPlate_CoreSW:
+config t
+vlan 25
+ name _____.com
+ exit
+Int vlan 25
+ no shut
+ ip add 10.0._._ 255.255._._
+ip dhcp excluded-add 10.0._._ 10.0._._
+ip dhcp pool _____.com
+ network 10.0._._ 255.255._._
+ default-router 10.0._._
+ domain-name ____.com
+ dns-server 10.m.1.10
+ option 150 ip 10.m.100.8
+ Int Fa 0/7
+  swi Voice vlan 25
+  do sh ip dhcp binding
+
+Ex.5.3: Compute and Configure SYKESASIA.com
+call center with 388 Agents,Tls,QAs,Pm. using
+10.0.0.0/8:
+Convert: 388 is 9 bits
+Subract: /32 - /9 = /23 is 3rd,2i
+Ipasok: "ipasok 2i sa 3rd"
+Sykesasia: 10.0.2.0/23
+
+notSYKESasia: 10.0.4.0/23
+
+Ex.5.3: Compute and Configure ETELECARE.com
+call center with 4700 Agents,Tls,QAs,Pm. using
+10.0.0.0/8:
+Convert: 4700agents is 13bits
+Subract: /32 - /13 = /19 (3rd,32i)
+Ipasok: ipasok 32i sa 3rd.
+ETELECARE.com: 10.0.32.0/19
+1st: 10.0.32.1/19
+broadcast: 10.0.63.255/19
+notETELECARE.com: 10.0.64.0/19
+
+Ex.5.4: Compute and Configure  nbi.gov.ph
+call center with 220 Agents,Tls,QAs,Pm. using
+10.0.0.0/8:
+Convert 220 is 8bits
+Subract: /32 - /8 = /24, 3rd,1i
+Ipasok: ipasok ang 1i sa 3rd
+nbi.gov.ph: 10.0.1.0/24
+1st: 10.0.1.1
+broadcast: 10.0.1.255
+notnbi.gov.ph: 10.0.2.0/24
+
+Ex.5.4: Compute and Configure  doh.gov.ph
+call center with 10% of 58 Agents,Tls,QAs,Pm. using
+10.0.0.0/8:
+Convert: 58 is 6bits
+Subract: /32 - /6 = /26 4th,64i
+Ipasok: ipasok 64i sa 4th:
+doh.gov.ph:  10.0.0.64/26
+1st:  
+broadcast: 
+not-doh.gov.ph: 10.0.0.128
+
+##########################
+### job interview L2 #####
+##########################
+J.O: What is CIDR: classless interdomail Routing:
+L2 ENG: "what IP address will I Order to Get 45 IP address:, heres: Pen,Paper"
+YOU: "Sorry, I dont need Paper, Lets save trees: Brains: 32 - 6bits = /26
+sir we gonna use /26 with .64 as networkAddres. .65 - .127"
+
+L2Eng: " i need around 100 ip address, what slash / "
+you: "100 is 7 bits, brain: /32-/7 = /25, 4th,128i
+
+L2Eng: " i need around 19 ip address, what slash / "
+you: " 19 is 5 bits, sa utak atras 5, = /27 32i, .33 1st
+
+L2Eng: " our company needs a PointToPoint Link WAN what / will i use? "
+YOu" you mean a 2 ip address network, 32 - 2 = /30, .4network
+1st usable .5, and .6 broacast: .7
+
+L2Eng: " our company needs a 245 ip addresses: / will i use? "
+YOu" you mean a 2 ip address network, 32 - 2 = /30, .4network
+1st usable .5, and .6 broacast: .7
+
+TASK6: On-Premise   vs  CloudBased  vs Hybrid
+
+ccna Routing:today/day3 and Switching:d5
+Routing = 1200pages  vs "2 commandments"
+
+2 commandments of Routing:
+
+Rule1: "Ping Dikit:devices ping/con directly"
+        NoDikit,noPing
+
+Rule2: youNeed to Route/Routing NOT Dikit:
+static = minWage - internetCafe/bahay
+Eigrp = 15 to 20k
+s,e+ OSPF = 20kto35k
+s,e,o + BGP = 50kup!
+s,e,o,b + VPN = 70kup
+
+TASK7: FIND THE NETWORK ADDRESS:
+R3: 
+Get IPaddress
+show ip int brief | ex una
+
+GetNetworkAddress:
+show ip route connected | inc C
+
+TASK8: Static Route for Network Engineer
+       to earn 560php/Day.
+R4: must learn network 4/5
+@r4:                              1stHop/UnangHole
+config t
+ip routing
+ip route 10.1.1.4 255.255.255.252 10.1.1.9
+ip route 10.1.1.0 255.255.255.252 10.1.1.9
+
+R3: must learn network 1,2,5
+@r3
+config t
+ip routing
+ip route 10.1.4.4 255.255.255.252 10.1.1.10
+ip route 10.1.4.8 255.255.255.252 10.1.1.10
+ip route 10.1.1.0 255.255.255.252 10.1.1.5
+
+R2: must learn network 1,2,3
+config t
+ip routing
+ip route 10.1.4.4 255.255.255.252 10.1.1.6
+ip route 10.1.4.8  255.255.255.252 10.1.1.6
+ip route 10.1.1.8  255.255.255.252 10.1.1.6 
+
+R1: must learn network 1,2,3,4 
+config t
+ip routing
+ip route 10.1.4.4 255.255.255.252 10.1.1.2
+ip route 10.1.4.8  255.255.255.252 10.1.1.2
+ip route 10.1.1.8  255.255.255.252 10.1.1.2
+ip route 10.1.1.4  255.255.255.252 10.1.1.2
+
+TASK9: DEFAULT ROUTE FOR END DEVICES/HOST:
+P1:
+config t
+int e0/0
+ ip add 10.2.1.51 255.255.255.0
+
+P2:
+config t
+int e1/0
+ ip add 10.2.1.52 255.255.255.0
+
+DefaultRoute: pc, endDevies:
+p1:
+CONFIG T
+ip route 0.0.0.0 0.0.0.0 10.2.1.1
+
+p2:
+CONFIG T
+ip route 0.0.0.0 0.0.0.0 10.2.1.2
+
+TASK10: USER A.I TO CONFIGURE 
+EIGRP, OSPF AND BGP:
+
+EIGRP:
+write a cisco eigrp configuration with as 100
+and network 10.0.0.0 and 192.168.1.0
+
+d1:d2:
+config t
+router eigrp 100
+network 10.0.0.0
+network 192.168.1.0
+no auto-summary
+
+r4:
+config t
+router eigrp 100
+network 10.0.0.0
+no auto-summary
+
+write a cisco configuration of ospf process id of 1
+and network of 10.1.1.8/30 in area 34 and 10.1.1.4/30 in area 0 
+
+R4:
+config t
+router ospf 1
+router-id 4.4.4.4
+network 10.1.1.8 0.0.0.3 area 34
+
+R3:
+config t
+router ospf 1
+router-id 3.3.3.3
+network 10.1.1.8 0.0.0.3 area 34
+network 10.1.1.4 0.0.0.3 area 0
+
+R2:
+config t
+router ospf 1
+router-id 2.2.2.2
+network 10.1.1.0 0.0.0.3 area 12
+network 10.1.1.4 0.0.0.3 area 0
+
+R1:
+config t
+router ospf 1
+router-id 1.1.1.1
+network 10.1.1.0 0.0.0.3 area 12
+
+EIGRP:
+sh ip eigrp neighbor
+sh ip eigrp topology
+sh ip route eigrp
+
+OSPF:
+sh ip ospf neighbor
+sh ip ospf database
+sh ip route ospf
+
+Homework:
+Ex.5.7: Compute and Configure  PEOPLESOFT.COM
+call center with 8500 Agents,Tls,QAs,Pm. using
+10.0.0.0/8:
+Convert 
+Subract: 
+Ipasok: 
+ PEOPLESOFT.COM
+1st: 
+broadcast:
+not PEOPLESOFT.COM
+
+Ex.5.8: Compute and Configure  TELUS.COM
+call center with 377 Agents,Tls,QAs,Pm. using
+10.0.0.0/8:
+Convert 
+Subract: 
+Ipasok: 
+TELUS.COM
+1st: 
+broadcast:
+TELUS.COM
+
+Ex.5.8: Compute and Configure  trustwave.COM
+call center with 1550 Agents,Tls,QAs,Pm. using
+10.0.0.0/8:
+Convert 
+Subract: 
+Ipasok: 
+trustwave.COM
+1st: 
+broadcast:
+trustwave.COM
+
+
+
+
+
+
+
+
