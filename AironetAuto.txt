@@ -1,5 +1,5 @@
 Conf t
-	dot11 ssid ccna-wifi-M
+	dot11 ssid NET+WIFIwilfred
 		authentication open
 		authentication key-management wpa
 		wpa-psk ascii C1sc0123
@@ -7,4 +7,6 @@ Conf t
 	int dot11Radio 0
 		no shut
 		encryption mode ciphers tkip
-		ssid ccna-wifi-M
+		ssid NET+WIFIwilfred
+        bridge-group 1
+end
